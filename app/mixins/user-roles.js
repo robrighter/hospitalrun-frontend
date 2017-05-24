@@ -1,5 +1,7 @@
 import Ember from 'ember';
 
+const { get, isEmpty, Mixin } = Ember;
+
 export const PREDEFINED_USER_ROLES = [
   { name: 'Data Entry', roles: ['Data Entry', 'user'], defaultRoute: 'patients.index' },
   { name: 'Doctor', roles: ['Doctor', 'user'], defaultRoute: 'patients.index'  },
@@ -22,8 +24,30 @@ export const PREDEFINED_USER_ROLES = [
 
 export default Ember.Mixin.create({
   userRoles: PREDEFINED_USER_ROLES,
-
   findUserRole(name) {
     return this.userRoles.findBy('name', name);
+  },
+  loadRoles() {
+    let store = get(this, 'store');
+    var storeRoles = store.findAll('user-role');
+    storeRoles.then(() => {
+      delete this.namedRoles;
+      this.set('namedRoles', Ember.computed.map('userRoles', function(userRole) {
+        let id = userRole.id !== undefined ? userRole.id : userRole.name.dasherize();
+        let userRoleModel = storeRoles.findBy('id', id);
+        if (!userRole.id) {
+          userRole.id = id;
+        }
+        if (userRoleModel) {
+          Ember.set(userRole, 'name', userRoleModel.get('name'));
+        }
+        return userRole;
+      }));
+    });
+    return storeRoles;
+  },
+  init() {
+    this.loadRoles();
   }
 });
+
