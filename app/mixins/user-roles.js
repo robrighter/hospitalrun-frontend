@@ -28,23 +28,23 @@ export default Ember.Mixin.create({
     return this.userRoles.findBy('name', name);
   },
   loadRoles() {
-    let store = get(this, 'store');
-    var storeRoles = store.findAll('user-role');
-    storeRoles.then(() => {
-      delete this.namedRoles;
-      this.set('namedRoles', Ember.computed.map('userRoles', function(userRole) {
-        let id = userRole.id !== undefined ? userRole.id : userRole.name.dasherize();
-        let userRoleModel = storeRoles.findBy('id', id);
-        if (!userRole.id) {
-          userRole.id = id;
-        }
-        if (userRoleModel) {
-          Ember.set(userRole, 'name', userRoleModel.get('name'));
-        }
-        return userRole;
-      }));
-    });
-    return storeRoles;
+    // let store = this.get('store');
+    // var storeRoles = store.findAll('user-role');
+    // storeRoles.then(() => {
+    //   delete this.namedRoles;
+    //   this.set('namedRoles', Ember.computed.map('userRoles', function(userRole) {
+    //     let id = userRole.id !== undefined ? userRole.id : userRole.name.dasherize();
+    //     let userRoleModel = storeRoles.findBy('id', id);
+    //     if (!userRole.id) {
+    //       userRole.id = id;
+    //     }
+    //     if (userRoleModel) {
+    //       Ember.set(userRole, 'name', userRoleModel.get('name'));
+    //     }
+    //     return userRole;
+    //   }));
+    // });
+    // return storeRoles;
   },
   init() {
     this.loadRoles();
